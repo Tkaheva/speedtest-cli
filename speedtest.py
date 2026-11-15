@@ -1,27 +1,17 @@
-
-
-
 import argparse
 import sys
 import time
 import urllib.request
 import urllib.error
 
-# Сколько запросов делаем по условию задачи
 REQUEST_COUNT = 10
-# Таймаут на один запрос, чтобы не висеть вечно на «тяжёлом» адресе
 TIMEOUT_SEC = 60
-# Размер чанка при чтении тела ответа
 CHUNK_SIZE = 64 * 1024  # 64 КБ
 # Пауза между запросами в секундах, чтобы не получить бан от сервера
 SLEEP_BETWEEN_REQUESTS = 1.0
 
 
 def download_once(url: str) -> int:
-    """
-    Делает один GET-запрос, полностью вычитывает тело ответа
-    и возвращает количество полученных байт.
-    """
     req = urllib.request.Request(url, headers={"User-Agent": "speedtest-cli/1.0"})
     with urllib.request.urlopen(req, timeout=TIMEOUT_SEC) as response:
         total = 0
@@ -51,8 +41,8 @@ def run_benchmark(url: str) -> None:
                 print(f"[{i:2}/{REQUEST_COUNT}] Ошибка 429: Сервер блокирует частые запросы. Пропускаем...", file=sys.stderr)
             else:
                 print(f"[{i:2}/{REQUEST_COUNT}] HTTP Ошибка {e.code}: {e.reason}", file=sys.stderr)
-            time.sleep(SLEEP_BETWEEN_REQUESTS + 0.5) # Чуть большая пауза при ошибке
-            continue # Переходим к следующему запросу
+            time.sleep(SLEEP_BETWEEN_REQUESTS + 0.5) 
+            continue 
         except urllib.error.URLError as e:
             print(f"[{i:2}/{REQUEST_COUNT}] Ошибка сети: {e.reason}", file=sys.stderr)
             time.sleep(SLEEP_BETWEEN_REQUESTS + 0.5)
@@ -74,7 +64,6 @@ def run_benchmark(url: str) -> None:
             f"{size / 1024:.1f} КБ за {elapsed:.3f} с  →  {speed_mb_s:.2f} МБ/с"
         )
         
-        # ДЕЛАЕМ ПАУЗУ, чтобы не злить сервер
         if i < REQUEST_COUNT:
             time.sleep(SLEEP_BETWEEN_REQUESTS)
 
